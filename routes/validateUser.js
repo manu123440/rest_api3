@@ -37,9 +37,7 @@ router.post('/validate',
 		body('imei')
 			.trim()
 			.notEmpty()
-			.withMessage('imei required')
-			.isNumeric()
-			.withMessage('must be a 16 digit number'),
+			.withMessage('imei required'),
 	], 
 	async (req, res, next) => {
 		const { phno, imei } = req.body;
@@ -57,10 +55,7 @@ router.post('/validate',
 				// console.log(error.array());
 				return res.json({
 					isSuccess: false,
-					errorMessage: error.array()[0].msg,
-					oldInput: {
-						phno: phno
-					}
+					errorMessage: error.array()[0].msg
 				})
 			}
 
@@ -73,25 +68,19 @@ router.post('/validate',
 						// console.log(x);
 
 						if (x.length >= 1) {
-							// console.log(x[0].imei, imei, x[0].imei == imei);
+							// console.log(typeof x[0].imei, typeof imei, x[0].imei === imei);
 
-							if (Number(x[0].imei) === Number(imei)) {
+							if (x[0].imei === imei) {
 								return res.json({
 									isSuccess: true,
-									errorMessage: '',
-									oldInput: {
-										phno: ''
-									}
+									errorMessage: ''
 								}) 
 							}
 
 							else {
 								return res.json({
 									isSuccess: false,
-									errorMessage: 'Invalid IMEI...',
-									oldInput: {
-										phno: phno
-									}
+									errorMessage: 'Invalid IMEI...'
 								})
 							}
 						}
@@ -99,10 +88,7 @@ router.post('/validate',
 						else {
 							return res.json({
 								isSuccess: false,
-								errorMessage: 'Invalid IMEI...',
-								oldInput: {
-									phno: phno
-								}
+								errorMessage: 'Invalid IMEI...'
 							})
 						}
 					}
@@ -113,10 +99,7 @@ router.post('/validate',
 		catch(error) {
 			return res.json({
 				isSuccess: false,
-				errorMessage: 'Failed',
-				oldInput: {
-					phno: phno
-				}
+				errorMessage: 'Failed'
 			})
 		}
 })

@@ -19,6 +19,18 @@ let selectFunction = (item) => {
   return options;
 };
 
+let updateFunction = (item, item2) => {
+  let options = {
+      method: "POST",
+      url: baseUrl + "update.php",
+      formData: {
+        update_query: item,
+        select_query: item2,
+      },
+    };
+    return options;
+}
+
 router.post('/checkSub',
   [
     body('phno').custom(value => {
@@ -49,10 +61,7 @@ router.post('/checkSub',
         return res.json({
           isSuccess: false,
           errorMessage: error.array()[0].msg,
-          days_remaining: '',
-          oldInput: {
-            phno: phno
-          }
+          days_remaining: ''
         })
       }
 
@@ -69,10 +78,7 @@ router.post('/checkSub',
               return res.json({
                 isActive: false,
                 errorMessage: 'Please Buy Subscription...',
-                days_remaining: '',
-                oldInput: {
-                  phno: ''
-                }
+                days_remaining: ''
               })
             }
 
@@ -111,12 +117,41 @@ router.post('/checkSub',
 
                       const days_remaining = no_of_days - days;
 
-                      return res.json({
-                        isActive: true,
-                        errorMessage: '',
-                        days_remaining: days_remaining,
-                        oldInput: {
-                          phno: ''
+                      let opt3 = updateFunction(
+                        "update users set no_of_days = '"
+                          .concat(`${days_remaining}`)
+                          .concat("' where phone = '")
+                          .concat(`${phno}`)
+                          .concat("'"),
+                        "select * from users where phone = '"
+                          .concat(`${phno}`)
+                          .concat("'")
+                      );
+
+                      // console.log(opt3);
+
+                      request(opt3, (error, response) => {
+                        if (error) throw new Error(error);
+                        else {
+                          let z = JSON.parse(response.body);
+
+                          // console.log(z);
+
+                          if (z.length >= 1) {
+                            return res.json({
+                              isActive: true,
+                              errorMessage: '',
+                              days_remaining: days_remaining,
+                            })
+                          }
+
+                          else {
+                            return res.json({
+                              isActive: true,
+                              errorMessage: 'Try again...',
+                              days_remaining: days_remaining,
+                            })
+                          }
                         }
                       })
                     }
@@ -138,10 +173,7 @@ router.post('/checkSub',
               return res.json({
                 isActive: false,
                 errorMessage: 'Phone Number not registered...',
-                days_remaining: '',
-                oldInput: {
-                  phno: ''
-                }
+                days_remaining: ''
               })
             }
           }
@@ -154,9 +186,6 @@ router.post('/checkSub',
         isActive: false,
         errorMessage: 'Failed...',
         days_remaining: '',
-        oldInput: {
-          phno: ''
-        }
       })
     }
 })

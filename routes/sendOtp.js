@@ -42,9 +42,6 @@ function random() {
 router.post('/sendOtp', [
 	body('to')
 		.custom(value => {
-		    // Regular expression to match international phone numbers
-		    // const phoneNumberRegex = /^[+]\d{1,3}[.\s-]?\d{3,}([.\s-]?\d{2,}){2,}$/;
-		    // const phoneNumberRegex = /^\+\d+$/;
 		    const phoneNumberRegex = /^\+\d+\s\d*$/;
 
 		    if (!phoneNumberRegex.test(value)) {
@@ -65,10 +62,7 @@ router.post('/sendOtp', [
 				// console.log(error.array());
 				return res.json({
 					isSuccess: false,
-					errorMessage: error.array()[0].msg,
-					oldInput: {
-						phno: to,
-					}
+					errorMessage: error.array()[0].msg
 				})
 			}
 
@@ -134,7 +128,7 @@ router.post('/sendOtp', [
 		catch(error) {
 		    return res.json({
 			   	isSuccess: false,
-			   	errorMessage: "Error sending SMS@@@@"
+			   	errorMessage: "Error sending SMS..."
 			});
 		}
 	}

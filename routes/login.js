@@ -48,9 +48,6 @@ let updateFunction = (item, item2) => {
 router.post("/login", 
 	[
 	  body('phno').custom(value => {
-		  // Regular expression to match international phone numbers
-		  // const phoneNumberRegex = /^[+]\d{1,3}[.\s-]?\d{3,}([.\s-]?\d{2,}){2,}$/;
-		  // const phoneNumberRegex = /^\+\d\s+$/;
 		  const phoneNumberRegex = /^\+\d+\s\d*$/;
 
 		  if (!phoneNumberRegex.test(value)) {
@@ -63,9 +60,7 @@ router.post("/login",
 		body('imei')
 			.trim()
 			.notEmpty()
-			.withMessage('imei required')
-			.isNumeric()
-			.withMessage('must be a 16 digit number'),
+			.withMessage('imei required'),
 	], 
 	async (req, res, next) => {
 		const { phno, imei } = req.body;
@@ -85,10 +80,7 @@ router.post("/login",
 				// console.log(error.array());
 				return res.json({
 					isSuccess: false,
-					errorMessage: error.array()[0].msg,
-					oldInput: {
-						phno: phno
-					}
+					errorMessage: error.array()[0].msg
 				})
 			}
 
@@ -99,9 +91,6 @@ router.post("/login",
 						let x = JSON.parse(response.body);
 
 						// console.log(x);
-
-						// let opt2 = selectFunction(
-						// );
 
 						// Regsiter the user
 						if (x.length === 0) {
@@ -129,20 +118,14 @@ router.post("/login",
 					    			// user successfully registered...
 					    			return res.json({
 											isSuccess: true,
-											errorMessage: '',
-											oldInput: {
-												phno: '',
-											}
+											errorMessage: ''
 										})
 					    		}
 
 					    		else {
 					    			return res.json({
 											isSuccess: false,
-											errorMessage: 'Failed to add user...',
-											oldInput: {
-												phno: phno
-											}
+											errorMessage: 'Failed to add user...'
 										})
 					    		}
 					    	}
@@ -155,10 +138,7 @@ router.post("/login",
 								// user log's in
 								return res.json({
 									isSuccess: true,
-									errorMessage: '',
-									oldInput: {
-										phno: ''
-									}
+									errorMessage: ''
 								})
 							}
 
@@ -187,20 +167,14 @@ router.post("/login",
 										if (z.length >= 1) {
 											return res.json({
 												isSuccess: true,
-												errorMessage: '',
-												oldInput: {
-													phno: ''
-												}
+												errorMessage: ''
 											})
 										}
 
 										else {
 											return res.json({
 												isSuccess: false,
-												errorMessage: 'Failed',
-												oldInput: {
-													phno: phno
-												}
+												errorMessage: 'Failed'
 											})
 										}
 									}
@@ -216,10 +190,7 @@ router.post("/login",
 		catch (error) {
 			return res.json({
 				isSuccess: false,
-				errorMessage: 'Failed',
-				oldInput: {
-					phno: phno
-				}
+				errorMessage: 'Failed'
 			})
 		}
 	}

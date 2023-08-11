@@ -7,9 +7,11 @@ const request = require('request');
 const router = express.Router();
 
 router.post('/payment', (req, res, next) => {
+	const path = 'http://localhost:3000/v1/success';
+
 	const options = {
 	  'method': 'GET',
-	  'url': `https://api.blockbee.io/checkout/request/?apikey=${process.env.API_KEY}&redirect_url=http://localhost:3000/v1/success&value=10&item_description=string&post=0`,
+	  'url': `https://api.blockbee.io/checkout/request/?apikey=${process.env.API_KEY}&redirect_url=${path}&value=10&item_description=string&post=0`,
 	  'headers': {
 	  }
 	};

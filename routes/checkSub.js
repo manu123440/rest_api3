@@ -137,19 +137,27 @@ router.post('/checkSub',
 
                           // console.log(z);
 
-                          if (z.length >= 1) {
+                          if (z.length >= 1 && Number(z[0].no_of_days) > 0) {
                             return res.json({
                               isActive: true,
                               errorMessage: '',
-                              days_remaining: days_remaining,
+                              days_remaining: days_remaining
+                            })
+                          }
+
+                          else if (z.length >= 1 && Number(z[0].no_of_days) <= 0) {
+                            return res.json({
+                              isActive: false,
+                              errorMessage: 'Your Subscription has expired...',
+                              days_remaining: days_remaining
                             })
                           }
 
                           else {
                             return res.json({
-                              isActive: true,
+                              isActive: false,
                               errorMessage: 'Try again...',
-                              days_remaining: days_remaining,
+                              days_remaining: days_remaining
                             })
                           }
                         }

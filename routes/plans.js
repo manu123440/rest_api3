@@ -4,12 +4,12 @@ const request = require('request');
 
 const router = express.Router();
 
-const baseUrl = "http://bhaveshnetflix.live/";
+const baseUrl = "http://bhaveshnetflix.live";
 
 let selectFunction = (item) => {
   let options = {
     method: "POST",
-    url: baseUrl + "select.php",
+    url: baseUrl + "/select.php",
     formData: {
       select_query: item,
     },

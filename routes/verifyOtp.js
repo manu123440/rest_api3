@@ -99,9 +99,37 @@ router.post('/verifyOtp',
 							// console.log(number, Number(number) === Number(otp));
 
 							if (number !== null && number !== '' && Number(number) === Number(otp)) {
-					      return res.json({
-									isSuccess: true,
-									errorMessage: ''
+								let opt2 = updateFunction(
+									"update users set otp = 'null'"
+										.concat("where phone = '")
+                    .concat(`${phno}`)
+                    .concat("'"),
+                  "select * from users where phone = '"
+                    .concat(`${phno}`)
+                    .concat("'")
+								);
+
+								request(opt2, (error, response) => {
+									if (error) throw new Error(error);
+									else {
+										let y = JSON.parse(response.body);
+
+										// console.log(y);
+
+										if (y.length >= 1) {
+											return res.json({
+												isSuccess: true,
+												errorMessage: ''
+											})
+										}
+
+										else {
+											return res.json({
+												isSuccess: false,
+												errorMessage: 'Failed to update otp...'
+											})
+										}
+									}
 								})
 							}
 

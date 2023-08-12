@@ -7,7 +7,7 @@ const request = require('request');
 const router = express.Router();
 
 router.post('/payment', (req, res, next) => {
-	const path = 'http://localhost:3000/v1/success';
+	const path = 'https://rest-api3-2qwx.onrender.com/v1/success';
 
 	const options = {
 	  'method': 'GET',

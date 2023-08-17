@@ -34,10 +34,6 @@ app.use('/v1', getSuccessRoute);
 app.use('/v1', notifyRoute);
 app.use('/v1', cancelRoute);
 
-app.get("/v1/success", (req, res, next) => {
-	return res.send("Success");
-})
-
 app.listen(PORT, () => {
 	console.log("Listening to localhost PORT 3000...");
 })

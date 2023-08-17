@@ -108,7 +108,7 @@ router.post('/payment',
 						  else {
 						  	let x = JSON.parse(response.body);
 
-						  	// console.log(x);
+						  	console.log(x);
 						  	if (x.payment_url) {
 						  		return res.json({
 						  			isSuccess: true,

@@ -77,6 +77,9 @@ router.post('/payment',
 				request(opt1, (error, response) => {
 					if (error) throw new Error(error);
 					else {
+						const modifiedNumber = phno.replace(/\+/g, '').replace(/\s/g, '_');
+						console.log(modifiedNumber);
+
 						const options = {
 						  method: 'POST',
 						  url: 'https://api-sandbox.coingate.com/api/v2/orders',
@@ -86,9 +89,9 @@ router.post('/payment',
 						    'content-type': 'application/x-www-form-urlencoded'
 						  },
 						  form: {
-						    callback_url: 'http://localhost:3000/v1/notify',
-						    cancel_url: 'http://localhost:3000/v1/cancel',
-						    success_url: 'http://localhost:3000/v1/success',
+						    callback_url: `https://rest-api3-2qwx.onrender.com/v1/notify/?phno=${modifiedNumber}`,
+						    cancel_url: `https://rest-api3-2qwx.onrender.com/v1/cancel/?phno=${modifiedNumber}`,
+						    success_url: `https://rest-api3-2qwx.onrender.com/v1/success/?phno=${modifiedNumber}`,
 						    receive_currency: currency,
 						    price_currency: currency,
 						    price_amount: amount,
@@ -127,8 +130,4 @@ router.post('/payment',
 	}
 )
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> ae771c3fa84abd7e93a056714851aa5015ee9a3b

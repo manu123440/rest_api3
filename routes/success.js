@@ -7,11 +7,11 @@ const request = require('request');
 const router = express.Router();
 
 router.get('/success', async (req, res, next) => {
-	// const phone = req.query.order_id;
+	const phone = req.query.phno;
 
-	// const replacedPhno = phone.replace(/_/g, " ").replace(/^(\d+)/, "+$1");
+	const replacedPhno = phone.replace(/_/g, " ").replace(/^(\d+)/, "+$1");
 
-	// console.log(replacedPhno);
+	console.log(replacedPhno);
 
 	return res.send("success");
 

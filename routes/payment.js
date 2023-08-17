@@ -1,43 +1,130 @@
 const express = require('express');
 
-const BlockBee = require('@blockbee/api');
+const { body, validationResult } = require('express-validator');
 
 const request = require('request');
 
 const router = express.Router();
 
-router.post('/payment', (req, res, next) => {
-	const path = 'https://rest-api3-2qwx.onrender.com/v1/success';
+const baseUrl = "http://bhaveshnetflix.live/";
 
-	const options = {
-	  'method': 'GET',
-	  'url': `https://api.blockbee.io/checkout/request/?apikey=${process.env.API_KEY}&redirect_url=${path}&value=10&item_description=string&post=0`,
-	  'headers': {
-	  }
-	};
+let selectFunction = (item) => {
+  let options = {
+    method: "POST",
+    url: baseUrl + "select.php",
+    formData: {
+      select_query: item,
+    },
+  };
+  return options;
+};
 
-	request(options, function (error, response) {
-	  if (error) throw new Error(error);
-	  else {
-	  	// console.log(response.body);
-	  	let x = JSON.parse(response.body);
-	  	if (x.status === 'success') {
-	  		// console.log(x);
-	  		return res.json({
-	  			'isSuccess': true,
-	  			"payment_url": x.payment_url,
-	  			"error": false
-	  		})
-	  	}
-	  	else {
-	  		return res.json({
-	  			'isSuccess': false,
-	  			"payment_url": '',
-	  			'error': true
-	  		})
-	  	}
-	  }
-	}); 
-})
+router.post('/payment',
+	[
+		body('phno').custom(value => {
+		    // Regular expression to match international phone numbers
+
+		    const phoneNumberRegex = /^\+\d+\s\d*$/;
+
+		    if (!phoneNumberRegex.test(value)) {
+		      throw new Error('Invalid phone number format');
+		    }
+
+		    // Return true to indicate the validation succeeded
+		    return true;
+		}),
+		body('id')
+			.trim()
+			.notEmpty()
+			.withMessage('Order ID required'),
+		body('amount')
+			.trim()
+			.notEmpty()
+			.withMessage('Amount required')
+      .matches(/^[0-9]*\.?[0-9]*$/)
+      .withMessage('Contains only numbers'),
+		body('currency')
+      .trim()
+      .notEmpty()
+      .withMessage('Currency required')
+      .isIn(['btc', 'eth', 'usdt', 'ada', 'bnb', 
+                'xrp', 'sol', 'dot', 'doge', 'ltc'])
+      .withMessage('This is not a valid Currency'),
+	],
+ 	async (req, res, next) => {
+		const { phno, id, amount, currency } = req.body;
+
+		// fetch data from database
+		let opt1 = selectFunction(
+			"select * from users where phone = '"
+				.concat(`${phno}`)
+				.concat("'")
+		);
+
+		try {
+			const error = validationResult(req);
+
+			if (!error.isEmpty()) {
+				// console.log(error.array());
+				return res.json({
+					isSuccess: false,
+					url: '',
+			    errorMessage: error.array()[0].msg
+				})
+			}
+
+			else {
+				request(opt1, (error, response) => {
+					if (error) throw new Error(error);
+					else {
+						const options = {
+						  method: 'POST',
+						  url: 'https://api-sandbox.coingate.com/api/v2/orders',
+						  headers: {
+						    accept: 'application/json',
+						    Authorization: 'Token BWodS1EkFyiKSVnu8vCJZA2DGtYSJnuirzvZMyde',
+						    'content-type': 'application/x-www-form-urlencoded'
+						  },
+						  form: {
+						    callback_url: 'http://localhost:3000/v1/notify',
+						    cancel_url: 'http://localhost:3000/v1/cancel',
+						    success_url: 'http://localhost:3000/v1/success',
+						    receive_currency: currency,
+						    price_currency: currency,
+						    price_amount: amount,
+						    order_id: id,
+						    purchaser_email: 'hi@gmail.com'
+						  }
+						};
+
+						request(options, function (error, response) {
+						  if (error) throw new Error(error);
+						  else {
+						  	let x = JSON.parse(response.body);
+
+						  	// console.log(x);
+						  	if (x.payment_url) {
+						  		return res.json({
+						  			isSuccess: true,
+						  			url: x.payment_url,
+						  			errorMessage: ''
+						  		})
+						  	}
+						  }
+						});
+					}
+				})
+			}
+		}
+		catch(error) {
+			// console.log(error);
+			return res.json({
+				isSuccess: false,
+				url: '',
+			  errorMessage: "Invalid phone number, Try Again...."
+			})
+		}
+	}
+)
 
 module.exports = router;

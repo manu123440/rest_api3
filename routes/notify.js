@@ -40,12 +40,17 @@ router.post('/notify', async (req, res, next) => {
 
 	try {
 		let opt1 = updateFunction(
+<<<<<<< HEAD
 			"update users set telegram = 'ab' where phone = '"
         .concat(`${replacedPhno}`)
         .concat("'"),
 			"select * from users where phone = '"
         .concat(`${replacedPhno}`)
         .concat("'")
+=======
+			"update users set telegram = 'ab' where phone = '+91 7579127430'",
+			"select * from users where phone = '+91 7579127430'"
+>>>>>>> 3ad972862fd5aa89199a7b4aa5750d52a1f6f04b
 		);
 
 		request(opt1, (error, response) => {
@@ -53,7 +58,11 @@ router.post('/notify', async (req, res, next) => {
             else {
                 let z = JSON.parse(response.body);
 
+<<<<<<< HEAD
                 // console.log(z);
+=======
+                console.log(z);
+>>>>>>> 3ad972862fd5aa89199a7b4aa5750d52a1f6f04b
 
                 if (z.length >= 1) {
                 	return res.json({

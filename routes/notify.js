@@ -33,40 +33,66 @@ let updateFunction = (item, item2) => {
 
 router.post('/notify', async (req, res, next) => {
 	const phone = req.query.phno;
+  const planId = req.query.plan;
 
 	const replacedPhno = phone.replace(/_/g, " ").replace(/^(\d+)/, "+$1");
 
 	// console.log(replacedPhno);
 
-	try {
-		let opt1 = updateFunction(
-			"update users set telegram = 'ab' where phone = '"
-        .concat(`${replacedPhno}`)
-        .concat("'"),
-			"select * from users where phone = '"
+  let opt1 = selectFunction(
+    "select * from users where phone = '"
         .concat(`${replacedPhno}`)
         .concat("'")
-		);
+  );
 
-		request(opt1, (error, response) => {
-            if (error) throw new Error(error);
-            else {
-                let z = JSON.parse(response.body);
-                console.log(z);
+	try {
+    request(opt1, (error, response) => {
+      if (error) throw new Error(error);
+      else {
+        let x = JSON.parse(response.body);
 
-                if (z.length >= 1) {
-                	return res.json({
-                		success: true
-                	})
-                }
+        const currentDate = new Date();
 
-                else {
-                	return res.json({
-                		success: false
-                	})
-                }
+        // Convert the date to a MySQL-compatible datetime string
+        const subDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+        // console.log(subDate);
+
+        let opt2 = updateFunction(
+          "update users set sub_date = '"
+            .concat(`${subDate}`)
+            .concat("', paid = 'true', plan_id = '")
+            .concat(`${planId}`)
+            .concat("', status = 'active' where phone = '")
+            .concat(`${replacedPhno}`)
+            .concat("'"),
+          "select * from users where phone = '"
+            .concat(`${replacedPhno}`)
+            .concat("'")
+        );
+
+        request(opt2, (error, response) => {
+          if (error) throw new Error(error);
+          else {
+            let z = JSON.parse(response.body);
+
+            // console.log(z);
+
+            if (z.length >= 1) {
+              return res.json({
+                success: true
+              })
             }
+
+            else {
+              return res.json({
+                success: false
+              })
+            }
+          }
         })
+      }
+    })
 	}
 	catch(error) {
 		return res.json({

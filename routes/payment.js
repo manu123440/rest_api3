@@ -86,9 +86,9 @@ router.post('/payment',
 						    'content-type': 'application/x-www-form-urlencoded'
 						  },
 						  form: {
-						    callback_url: 'http://localhost:3000/v1/notify',
-						    cancel_url: 'http://localhost:3000/v1/cancel',
-						    success_url: 'http://localhost:3000/v1/success',
+						    callback_url: 'https://rest-api3-2qwx.onrender.com/v1/notify',
+						    cancel_url: 'https://rest-api3-2qwx.onrender.com/v1/cancel',
+						    success_url: 'https://rest-api3-2qwx.onrender.com/v1/success',
 						    receive_currency: currency,
 						    price_currency: currency,
 						    price_amount: amount,

@@ -127,8 +127,4 @@ router.post('/payment',
 	}
 )
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> ae771c3fa84abd7e93a056714851aa5015ee9a3b

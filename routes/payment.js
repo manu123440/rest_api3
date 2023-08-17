@@ -89,12 +89,9 @@ router.post('/payment',
 						    'content-type': 'application/x-www-form-urlencoded'
 						  },
 						  form: {
-						    callback_url: `https://rest-api3-2qwx.onrender.com/v1/notify/?phno=${modifiedNumber}`,
+						    callback_url: `https://rest-api3-2qwx.onrender.com/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
 						    cancel_url: `https://rest-api3-2qwx.onrender.com/v1/cancel/?phno=${modifiedNumber}`,
 						    success_url: `https://rest-api3-2qwx.onrender.com/v1/success/?phno=${modifiedNumber}`,
-						    callback_url: 'https://rest-api3-2qwx.onrender.com/v1/notify',
-						    cancel_url: 'https://rest-api3-2qwx.onrender.com/v1/cancel',
-						    success_url: 'https://rest-api3-2qwx.onrender.com/v1/success',
 						    receive_currency: currency,
 						    price_currency: currency,
 						    price_amount: amount,

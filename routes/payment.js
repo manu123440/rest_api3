@@ -86,7 +86,7 @@ router.post('/payment',
 						    'content-type': 'application/x-www-form-urlencoded'
 						  },
 						  form: {
-						    callback_url: 'https://notify.requestcatcher.com/test',
+						    callback_url: 'https://rest-api3-2qwx.onrender.com/v1/notify',
 						    cancel_url: 'https://rest-api3-2qwx.onrender.com/v1/cancel',
 						    success_url: 'https://rest-api3-2qwx.onrender.com/v1/success',
 						    receive_currency: currency,

@@ -57,13 +57,17 @@ router.post("/login",
 		  // Return true to indicate the validation succeeded
 		  return true;
 		}),
+		body('telegram')
+			.trim()
+			.notEmpty()
+			.withMessage('Telegram required'),
 		body('imei')
 			.trim()
 			.notEmpty()
 			.withMessage('imei required'),
 	], 
 	async (req, res, next) => {
-		const { phno, imei } = req.body;
+		const { phno, imei, telegram } = req.body;
 
 		// let isSuccess = false;
 
@@ -94,10 +98,10 @@ router.post("/login",
 
 						// Regsiter the user
 						if (x.length === 0) {
-							let values1 = `\'${phno}\', 'null\', '${imei}\', 'null\', 'null\', 'null\', 'null\'`;
+							let values1 = `\'${phno}\', '${telegram}\', 'null\', '${imei}\', 'null\', 'null\', 'null\', 'null\'`;
 
 					    let opt2 = insertFunction(
-					      "insert into users (phone, otp, imei, sub_date, plan_id, no_of_days, status) values(" 
+					      "insert into users (phone, telegram, otp, imei, sub_date, plan_id, no_of_days, status) values(" 
 					      	.concat(`${values1}`)
 					      	.concat(")"),
 								"select * from users where phone = '"

@@ -78,7 +78,7 @@ router.post('/payment',
 					if (error) throw new Error(error);
 					else {
 						const modifiedNumber = phno.replace(/\+/g, '').replace(/\s/g, '_');
-						console.log(modifiedNumber);
+						// console.log(modifiedNumber);
 
 						const options = {
 						  method: 'POST',
@@ -108,7 +108,7 @@ router.post('/payment',
 						  else {
 						  	let x = JSON.parse(response.body);
 
-						  	console.log(x);
+						  	// console.log(x);
 						  	if (x.payment_url) {
 						  		return res.json({
 						  			isSuccess: true,

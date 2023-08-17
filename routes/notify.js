@@ -76,7 +76,7 @@ router.post('/notify', async (req, res, next) => {
           else {
             let z = JSON.parse(response.body);
 
-            console.log(z);
+            // console.log(z);
 
             if (z.length >= 1) {
               return res.json({

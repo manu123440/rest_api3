@@ -109,7 +109,7 @@ router.post("/login",
 								  .concat("'")
 					    );
 
-					    console.log(opt2, values1);
+					    // console.log(opt2, values1);
 
 					    request(opt2, (error, response) => {
 					    	if (error) throw new Error(error);

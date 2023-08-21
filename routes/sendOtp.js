@@ -39,6 +39,13 @@ function random() {
     return num;
 }
 
+const array = [
+	{ lang: 'en',
+	  msg: "Do not share it with anyone, even if they claim to work for H4KIG. This code can only be used to log in to your app. We will never ask you for it for any other purpose. If you didn't request this code while trying to log in from another device, you can ignore this message." },
+	{ lang: 'fr',
+	  msg: "Ne le communiquez à personne, même si quelqu'un prétend être un employé de H4KIG. Ce code est uniquement destiné à être utilisé pour vous connecter à votre application. Nous ne vous le demanderons jamais pour d'autres raisons. Si vous n'avez pas demandé ce code en essayant de vous connecter depuis un autre appareil, vous pouvez ignorer ce message." }
+];
+
 router.post('/sendOtp', [
 	body('to')
 		.custom(value => {
@@ -51,9 +58,17 @@ router.post('/sendOtp', [
 		    // Return true to indicate the validation succeeded
 		    return true;
 	  	}),
+	body('lang')
+        .trim()
+        .notEmpty()
+        .withMessage('Language required')
+        .isIn(['en', 'fr'])
+        .withMessage('Select a valid Language'),
 	],
  	async (req, res, next) => {
-		const { to } = req.body;
+		const { to, lang } = req.body;
+
+		let msgBody = '';
 
 		try {
 			const error = validationResult(req);
@@ -71,10 +86,21 @@ router.post('/sendOtp', [
 		    	rNumber = random();
 		    	// console.log(rNumber);
 
+		    	// console.log(lang, lang === array[1].lang);
+
+		    	if (lang === array[1].lang) {
+		    		msgBody = `Code de connexion : ${rNumber}. ${array[1].msg}`;
+		    	}
+		    	else if (lang === array[0].lang) {
+		    		msgBody = `Connection Code : ${rNumber}. ${array[0].msg}`;
+		    	}
+
+		    	// console.log(msgBody, typeof msgBody);
+
 				client.messages
 		    	.create({ 
 		    		to: `${to}`, 
-		    		body: `Your OTP is ${rNumber}`,
+		    		body: `${msgBody}`,
 		    		from: '+12184323428'
 		    	})
 		    	.then((message) => {

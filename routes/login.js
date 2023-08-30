@@ -6,8 +6,6 @@ const request = require('request');
 
 const router = express.Router();
 
-// const baseUrl = "https://app.h4kig.com/";
-
 const baseUrl = "http://bhaveshnetflix.live/";
 
 let selectFunction = (item) => {
@@ -48,7 +46,7 @@ let updateFunction = (item, item2) => {
 router.post("/login", 
 	[
 	  body('phno').custom(value => {
-		  const phoneNumberRegex = /^\+\d+\s\d*$/;
+	          const phoneNumberRegex = /^\+\d+\s\d*$/;
 
 		  if (!phoneNumberRegex.test(value)) {
 		    throw new Error('Invalid phone number format');
@@ -98,10 +96,10 @@ router.post("/login",
 
 						// Regsiter the user
 						if (x.length === 0) {
-							let values1 = `\'${phno}\', '${telegram}\', 'null\', '${imei}\', 'null\', 'null\', 'null\', 'null\', 'null\'`;
+							let values1 = `\'${phno}\', '${telegram}\', 'null\', '${imei}\', 'null\', 'null\', 'null\', 'null\', 'null\', 'null\'`;
 
 					    let opt2 = insertFunction(
-					      "insert into users (phone, telegram, otp, imei, sub_date, plan_id, no_of_days, paid, status) values(" 
+					      "insert into users (phone, telegram, otp, imei, sub_date, plan_id, no_of_days, paid, status, payment_id) values(" 
 					      	.concat(`${values1}`)
 					      	.concat(")"),
 								"select * from users where phone = '"

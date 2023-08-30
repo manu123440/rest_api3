@@ -123,7 +123,7 @@ router.get('/status/:phno',
 												else { 
 													let z1 = JSON.parse(response.body);
 
-													console.log(z1);
+													// console.log(z1);
 
 													if (z1.length >= 1) {
 														let noOfDays = z1[0].no_of_days;

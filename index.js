@@ -15,6 +15,7 @@ const getPlansRoute = require('./routes/plans');
 const getSuccessRoute = require('./routes/success');
 const notifyRoute = require('./routes/notify');
 const cancelRoute = require('./routes/cancel');
+const statusRoute = require('./routes/payment_status');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/v1', getPlansRoute);
 app.use('/v1', getSuccessRoute);
 app.use('/v1', notifyRoute);
 app.use('/v1', cancelRoute);
+app.use('/v1', statusRoute);
 
 app.listen(PORT, () => {
 	console.log("Listening to localhost PORT 3000...");

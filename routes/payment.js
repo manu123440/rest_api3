@@ -19,6 +19,18 @@ let selectFunction = (item) => {
   return options;
 };
 
+let updateFunction = (item, item2) => {
+	let options = {
+	    method: "POST",
+	    url: baseUrl + "update.php",
+	    formData: {
+	      update_query: item,
+	      select_query: item2,
+	    },
+  	};
+  	return options;
+};
+
 router.post('/payment',
 	[
 		body('phno').custom(value => {
@@ -37,9 +49,16 @@ router.post('/payment',
 			.trim()
 			.notEmpty()
 			.withMessage('Order ID required'),
+		body('currency')
+      .trim()
+      .notEmpty()
+      .withMessage('Currency required')
+      .isIn(['btc', 'eth', 'usdt', 'ada', 'bnb', 
+                'xrp', 'sol', 'dot', 'doge', 'ltc'])
+      .withMessage('This is not a valid Currency'),
 	],
  	async (req, res, next) => {
-		const { phno, id } = req.body;
+		const { phno, id, currency } = req.body;
 
 		// fetch data from database
 		let opt1 = selectFunction(
@@ -55,7 +74,7 @@ router.post('/payment',
 				// console.log(error.array());
 				return res.json({
 					isSuccess: false,
-					url: '',
+					address: '',
 			    errorMessage: error.array()[0].msg
 				})
 			}
@@ -64,59 +83,93 @@ router.post('/payment',
 				request(opt1, (error, response) => {
 					if (error) throw new Error(error);
 					else {
-						const modifiedNumber = phno.replace(/\+/g, '').replace(/\s/g, '_');
-						// console.log(modifiedNumber);
-
 						let opt2 = selectFunction(
 							"select amount from plan where id = '"
 								.concat(`${id}`)
 								.concat("'")
 						);
 
-						request(opt2, (error, response) => {
-							if (error) throw new Error(error);
+						request(opt2, function (error, response) {
+						  if (error) throw new Error(error);
 						  else {
-						  	let z = JSON.parse(response.body);
+						  	let x = JSON.parse(response.body);
 
-						  	if (z.length >= 1) {
-						  		const amount = z[0].amount;
-						  		// console.log(amount);
+						  	// console.log(x);
 
-						  		const options = {
-									  method: 'POST',
-									  url: 'https://api-sandbox.coingate.com/api/v2/orders',
-									  headers: {
-									    accept: 'application/json',
-									    Authorization: 'Token BWodS1EkFyiKSVnu8vCJZA2DGtYSJnuirzvZMyde',
-									    'content-type': 'application/x-www-form-urlencoded'
+						  	if (x.length >= 1) {
+									const modifiedNumber = phno.replace(/\+/g, '').replace(/\s/g, '_');
+
+									// console.log(modifiedNumber);
+
+						  		let options = {
+									  'method': 'POST',
+									  'url': 'https://api-sandbox.nowpayments.io/v1/payment',
+									  'headers': {
+									    'x-api-key': '5RBGE0W-0MTMWKD-KEHQK25-DX4Q6Q5',
+									    'Content-Type': 'application/json'
 									  },
-									  form: {
-									    callback_url: `https://rest-api3-2qwx.onrender.com/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
-									    cancel_url: `https://rest-api3-2qwx.onrender.com/v1/cancel/?phno=${modifiedNumber}`,
-									    success_url: `https://rest-api3-2qwx.onrender.com/v1/success/?phno=${modifiedNumber}`,
-									    // callback_url: `http://localhost:3000/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
-									    // cancel_url: `http://localhost:3000/v1/cancel/?phno=${modifiedNumber}`,
-									    // success_url: `http://localhost:3000/v1/success/?phno=${modifiedNumber}`,
-									    receive_currency: 'EUR',
-									    price_currency: 'EUR',
-									    price_amount: amount,
-									    order_id: id,
-									    purchaser_email: 'hi@gmail.com'
-									  }
+									  body: JSON.stringify({
+									    "price_amount": x[0].amount,
+									    "price_currency": 'eur',
+									    "pay_currency": currency,
+									    "ipn_callback_url": `https://abcd-4wlf.onrender.com/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
+									    "order_id": id,
+									    "case": "success"
+									  })
 									};
 
-									request(options, function (error, response) {
+									request(options, (error, response) => {
 									  if (error) throw new Error(error);
 									  else {
-									  	let x = JSON.parse(response.body);
+									  	let y = JSON.parse(response.body);
 
-									  	// console.log(x);
-									  	if (x.payment_url) {
+									  	// console.log(y);
+
+									  	if (y.hasOwnProperty('payment_id')) {
+									  		// update payment_id in db
+
+									  		let opt3 = updateFunction(
+													"update users SET payment_id = '"
+														.concat(`${y['payment_id']}`)
+														.concat("' where phone = '")
+														.concat(`${phno}`)
+														.concat("'"),
+													"select * from users where phone = '"
+														.concat(`${phno}`)
+														.concat("'")
+												);
+
+												request(opt3, (error, response) => {
+												  if (error) throw new Error(error);
+												  else {
+												  	let z = JSON.parse(response.body);
+
+												  	// console.log(z);
+
+												  	if (z.length >= 1) {
+												  		return res.json({
+													  		isSuccess: true,
+													  		address: y.pay_address,
+													  		errorMessage: ''
+													  	})
+												  	}
+
+												  	else {
+												  		return res.json({
+													  		isSuccess: false,
+													  		address: '',
+													  		errorMessage: 'failed...'
+													  	})
+												  	}
+												  }
+												})
+									  	}
+									  	else {
 									  		return res.json({
-									  			isSuccess: true,
-									  			url: x.payment_url,
-									  			errorMessage: ''
-									  		})
+										  		isSuccess: false,
+										  		address: '',
+										  		errorMessage: 'failed...'
+										  	})
 									  	}
 									  }
 									});
@@ -125,12 +178,12 @@ router.post('/payment',
 						  	else {
 						  		return res.json({
 										isSuccess: false,
-										url: '',
-									  errorMessage: "Invalid plan id, Try Again...."
+										address: '',
+								    errorMessage: 'Invalid Plan ID...'
 									})
 						  	}
 						  }
-						})
+						});
 					}
 				})
 			}
@@ -139,7 +192,7 @@ router.post('/payment',
 			// console.log(error);
 			return res.json({
 				isSuccess: false,
-				url: '',
+				address: '',
 			  errorMessage: "Invalid phone number, Try Again...."
 			})
 		}

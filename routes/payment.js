@@ -119,7 +119,7 @@ router.post('/payment',
 									    "pay_currency": currency,
 									    "ipn_callback_url": `http://localhost:3000/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
 									    "order_id": id,
-								            "case" : "success"
+								      "case": "success"
 									  })
 									};
 
@@ -149,7 +149,7 @@ router.post('/payment',
 												  else {
 												  	let z = JSON.parse(response.body);
 
-												  	// console.log(z);
+												  	console.log(z);
 
 												  	if (z.length >= 1) {
 												  		return res.json({

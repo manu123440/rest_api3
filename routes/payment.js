@@ -38,6 +38,8 @@ router.post('/payment',
 
 		    const phoneNumberRegex = /^\+\d+\s\d*$/;
 
+		    // console.log(value, typeof value, phoneNumberRegex.test('+91 7579127430'));
+
 		    if (!phoneNumberRegex.test(value)) {
 		      throw new Error('Invalid phone number format');
 		    }
@@ -60,6 +62,8 @@ router.post('/payment',
  	async (req, res, next) => {
 		const { phno, id, currency } = req.body;
 
+		// console.log(phno);
+
 		// fetch data from database
 		let opt1 = selectFunction(
 			"select * from users where phone = '"
@@ -75,6 +79,7 @@ router.post('/payment',
 				return res.json({
 					isSuccess: false,
 					address: '',
+					amount: '',
 			    errorMessage: error.array()[0].msg
 				})
 			}
@@ -83,6 +88,26 @@ router.post('/payment',
 				request(opt1, (error, response) => {
 					if (error) throw new Error(error);
 					else {
+						// const options = {
+						//   method: 'POST',
+						//   url: 'https://api-sandbox.coingate.com/api/v2/orders',
+						//   headers: {
+						//     accept: 'application/json',
+						//     Authorization: 'Token BWodS1EkFyiKSVnu8vCJZA2DGtYSJnuirzvZMyde',
+						//     'content-type': 'application/x-www-form-urlencoded'
+						//   },
+						//   form: {
+						//     callback_url: 'http://localhost:3000/v1/notify',
+						//     cancel_url: 'http://localhost:3000/v1/cancel',
+						//     success_url: 'http://localhost:3000/v1/success',
+						//     receive_currency: currency,
+						//     price_currency: currency,
+						//     price_amount: amount,
+						//     order_id: id,
+						//     purchaser_email: 'hi@gmail.com'
+						//   }
+						// };
+
 						let opt2 = selectFunction(
 							"select amount from plan where id = '"
 								.concat(`${id}`)
@@ -112,9 +137,8 @@ router.post('/payment',
 									    "price_amount": x[0].amount,
 									    "price_currency": 'eur',
 									    "pay_currency": currency,
-									    "ipn_callback_url": `https://abcd-4wlf.onrender.com/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
+									    "ipn_callback_url": `http://localhost:3000/v1/notify/?phno=${modifiedNumber}&plan=${id}`,
 									    "order_id": id,
-									    "case": "success"
 									  })
 									};
 
@@ -150,6 +174,7 @@ router.post('/payment',
 												  		return res.json({
 													  		isSuccess: true,
 													  		address: y.pay_address,
+													  		amount: y.pay_amount,
 													  		errorMessage: ''
 													  	})
 												  	}
@@ -158,6 +183,7 @@ router.post('/payment',
 												  		return res.json({
 													  		isSuccess: false,
 													  		address: '',
+													  		amount: '',
 													  		errorMessage: 'failed...'
 													  	})
 												  	}
@@ -168,6 +194,7 @@ router.post('/payment',
 									  		return res.json({
 										  		isSuccess: false,
 										  		address: '',
+													amount: '',
 										  		errorMessage: 'failed...'
 										  	})
 									  	}
@@ -179,6 +206,7 @@ router.post('/payment',
 						  		return res.json({
 										isSuccess: false,
 										address: '',
+										amount: '',
 								    errorMessage: 'Invalid Plan ID...'
 									})
 						  	}
@@ -193,6 +221,7 @@ router.post('/payment',
 			return res.json({
 				isSuccess: false,
 				address: '',
+				amount: '',
 			  errorMessage: "Invalid phone number, Try Again...."
 			})
 		}
